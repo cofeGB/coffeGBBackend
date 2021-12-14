@@ -3,13 +3,13 @@ info:
   title: RestApi for CoffeGb
   version: 1.0.0
 tags:
-- name: NawMenu
+- name: NavMenu
   description: Работа с меню навигации
 
 
 components:
   schemas:
-    NawMenu:
+    NavMenu:
       type: object
       properties:
         ID:
