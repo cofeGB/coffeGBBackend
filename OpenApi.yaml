@@ -1,0 +1,29 @@
+openapi: 3.0.3
+info:
+  title: RestApi for CoffeGb
+  version: 1.0.0
+tags:
+- name: NawMenu
+  description: Работа с меню навигации
+
+
+components:
+  schemas:
+    NawMenu:
+      type: object
+      properties:
+        ID:
+          type: string
+        Title:
+          type: string
+	      IIcon:
+          type: string
+	      QQuery_:
+          type: string
+	      WWarn:
+          type: boolean
+	      WWarnMsg:
+          type: string
+
+paths:
+  

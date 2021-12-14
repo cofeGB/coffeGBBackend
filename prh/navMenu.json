@@ -1,0 +1,34 @@
+[
+  {
+    "title": "Закуски",
+    "route": "/menu",
+    "icon": "starters",
+    "query": "starters",
+    "warn": false,
+    "warnMsg": ""
+  },
+  {
+    "title": "Сендвичи",
+    "route": "/menu",
+    "icon": "sandwich",
+    "query": "sandwich",
+    "warn": false,
+    "warnMsg": ""
+  },
+  {
+    "title": "Салаты",
+    "route": "/menu",
+    "icon": "salad",
+    "query": "salad",
+    "warn": false,
+    "warnMsg": ""
+  },
+  {
+    "title": "Десерты",
+    "route": "/menu",
+    "icon": "desserts",
+    "query": "desserts",
+    "warn": false,
+    "warnMsg": ""
+  }
+]
