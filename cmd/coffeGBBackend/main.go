@@ -7,7 +7,7 @@ import (
 	//"gorm.io/gorm"
 
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_storage/gormstore/starterstore"
-	//"github.com/cofeGB/coffeGBBackend/internal/cofe_storage/gormstore/nawmenustore"
+	//"github.com/cofeGB/coffeGBBackend/internal/cofe_storage/gormstore/navmenustore"
 )
 
 func main() {
@@ -18,5 +18,4 @@ func main() {
 		log.Fatal(err)
 	}
 
-	
 }
