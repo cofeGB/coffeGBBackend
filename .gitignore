@@ -1,0 +1,18 @@
+# local env files
+.env
+.env.local
+.env.*.local
+
+# Log files
+*.log*
+
+# Editor directories and files
+.idea
+.vscode
+
+# sqllite
+*.db
+
+# app specific
+**/coffeGBBackend
+**/apiserver
