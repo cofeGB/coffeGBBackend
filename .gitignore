@@ -14,5 +14,5 @@
 *.db
 
 # app specific
-**/coffeGBBackend
-**/apiserver
+coffeGBBackend
+apiserver
