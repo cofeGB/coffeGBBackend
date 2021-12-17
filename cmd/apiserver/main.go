@@ -13,11 +13,15 @@ import (
 
 	// third party
 	"github.com/kelseyhightower/envconfig"
+	"gorm.io/gorm"
 
 	// my own
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_api"
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_services"
+	"github.com/cofeGB/coffeGBBackend/internal/cofe_services/nawmenu"
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_storage"
+	"github.com/cofeGB/coffeGBBackend/internal/cofe_storage/gormstore/nawmenustore"
+	"github.com/cofeGB/coffeGBBackend/internal/cofe_storage/gormstore/starterstore"
 )
 
 const (
@@ -29,6 +33,7 @@ type ServerSettings struct {
 	Listen   string `default:"127.0.0.1:8123"`
 	LogLevel string `default:"INFO"`
 	DBFile   string `default:"coffeDb.db"`
+	DSN		 string `default:"host=10.209.81.154 user=postgres password=postgres dbname=coffegb port=5432 sslmode=disable"`
 }
 
 func setUp() (srv *ServerSettings) {
@@ -53,16 +58,33 @@ func main() {
 
 	// init storages and services
 
-	storage, err := cofe_storage.NewCofeStorage(srvSetting.DBFile)
-	if err != nil {
-		log.Fatalf("cannot initialize storage: %s", err.Error())
-	}
-	defer storage.Close()
+													// storage, err := cofe_storage.NewCofeStorage(srvSetting.DBFile)
+													// if err != nil {
+													// 	log.Fatalf("cannot initialize storage: %s", err.Error())
+													// }
+													// defer storage.Close()
 
-	cofeService := cofe_services.NewCofeService(storage)
+													// cofeService := cofe_services.NewCofeService(storage)
+	
+
+	store , err:=starterstore.StartDB(srvSetting.DSN,gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+     
+
+	nmstore:=nawmenustore.NewNawMenu(store.DB)
+
+	mawMenu:=nawmenu.NewMenu(nmstore)
+
+
+
+
 
 	// start api server
-	server := cofe_api.NewCofeAPIServer(srvSetting.Listen, srvSetting.LogLevel, cofeService)
+	//server := cofe_api.NewCofeAPIServer(srvSetting.Listen, srvSetting.LogLevel, cofeService)
+	server := cofe_api.NewCofeAPIServer(srvSetting.Listen, srvSetting.LogLevel, mawMenu)
+
 
 	go func() {
 		// usually server works behind proxy,
