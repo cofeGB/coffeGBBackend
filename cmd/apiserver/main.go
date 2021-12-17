@@ -6,6 +6,7 @@ import (
 	//std
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -22,25 +23,41 @@ import (
 
 const (
 	envPrefix             = "COFFEGB"
+	envDbPrefix           = "DATABASE"
 	herokuNginxSignalFile = "/tmp/app-initialized"
 )
 
-type ServerSettings struct {
-	Listen   string `default:"127.0.0.1:8123"`
-	LogLevel string `default:"INFO"`
-	DBFile   string `default:"coffeDb.db"`
+type DBSettings struct {
+	URL          string
+	QueryTimeout time.Duration `default:"30s"`
 }
 
-func setUp() (srv *ServerSettings) {
+type ServerSettings struct {
+	Listen      string `default:"127.0.0.1:8123"`
+	LogLevel    string `default:"INFO"`
+	LogRequests bool   `default:"false"`
+}
+
+func setUp() (srv *ServerSettings, db *DBSettings) {
+	srv = &ServerSettings{}
+	db = &DBSettings{}
+	flag.Usage = func() {
+		fmt.Print("-- App server config --\n\n")
+		_ = envconfig.Usage(envPrefix, srv)
+		fmt.Print("\n-- Database config --\n\n")
+		_ = envconfig.Usage(envDbPrefix, db)
+	}
 	flag.Parse()
 
-	srv = &ServerSettings{}
 	// always try to read env, maybe use defaults
 	if err := envconfig.Process(envPrefix, srv); err != nil {
 		log.Fatalln(err)
 	}
+	if err := envconfig.Process(envDbPrefix, db); err != nil {
+		log.Fatalln(err)
+	}
 
-	return srv
+	return srv, db
 }
 
 func main() {
@@ -49,11 +66,14 @@ func main() {
 	signal.Notify(quit, os.Interrupt)
 
 	// setup app
-	srvSetting := setUp()
+	srvSetting, dbSettings := setUp()
 
 	// init storages and services
 
-	storage, err := cofe_storage.NewCofeStorage(srvSetting.DBFile)
+	storage, err := cofe_storage.NewCofeStorage(cofe_storage.Config{
+		DSN:     dbSettings.URL,
+		Timeout: dbSettings.QueryTimeout,
+	})
 	if err != nil {
 		log.Fatalf("cannot initialize storage: %s", err.Error())
 	}
