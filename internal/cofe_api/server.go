@@ -26,7 +26,7 @@ func NewCofeAPIServer(addr, logLevel string, service *cofe_services.CofeService)
 	router.Use(middleware.Timeout(ServerTimeout))
 
 	// endpoints
-	router.Get("/", handler.Hello)
+	router.Get("/api", handler.Hello)
 
 	return &http.Server{Addr: addr, Handler: router}
 }
