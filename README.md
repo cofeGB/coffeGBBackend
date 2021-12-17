@@ -32,6 +32,10 @@ CoffeGB - это сервис для ... (TODO: описание).
     PG_USER=coffe
     PG_PASS=coffe
     ```
+1) скопировать манифест docker-compose:
+    ```
+    cp docker-compose.dev.yml docker-compose.yml
+    ```
 1) запустить проект
     ```
     docker-compose up -d
