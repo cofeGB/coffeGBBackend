@@ -43,7 +43,7 @@ jobs:
       - run: heroku config:set -a $HEROKU_APP NGINX_ALLOWED_HOSTS=https://github.com
       # deploy
       - run: heroku git:remote -a $HEROKU_APP
-      - run: git push heroku main --force
+      - run: git push heroku $GITHUB_REF_NAME:main --force
       # start
       - run: heroku ps:scale $HEROKU_SERVICE=1
       # check
