@@ -22,20 +22,20 @@ type NawMenu struct {
  */
 
 type NawMenuStore interface {
-	ReadNawMenu(ctx context.Context) ([]NawMenu, error)
+	GetListNawMenu(ctx context.Context) ([]NawMenu, error)
 }
 
 
 type NMenu struct {
 	 nawMenuStore NawMenuStore
 }
-func NewMenu(nawMenuStore NawMenuStore ) *NMenu {
+func NewNawMenu(nawMenuStore NawMenuStore ) *NMenu {
 	return &NMenu{
 		nawMenuStore: nawMenuStore,
 	}
 }
 
-func(ms *NMenu) ReaNawMenu(ctx context.Context) ([]NawMenu, error) {
+func(ms *NMenu) GetListNawMenu(ctx context.Context) ([]NawMenu, error) {
      
 	return nil,nil
 }

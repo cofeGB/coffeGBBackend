@@ -13,15 +13,18 @@ import (
 
 	// third party
 	"github.com/kelseyhightower/envconfig"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
 	// my own
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_api"
-	"github.com/cofeGB/coffeGBBackend/internal/cofe_services"
+	//"github.com/cofeGB/coffeGBBackend/internal/cofe_services"
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_services/nawmenu"
-	"github.com/cofeGB/coffeGBBackend/internal/cofe_storage"
-	"github.com/cofeGB/coffeGBBackend/internal/cofe_storage/gormstore/nawmenustore"
-	"github.com/cofeGB/coffeGBBackend/internal/cofe_storage/gormstore/starterstore"
+	"github.com/cofeGB/coffeGBBackend/internal/cofe_services/services"
+	//"github.com/cofeGB/coffeGBBackend/internal/cofe_storage"
+	
+	"github.com/cofeGB/coffeGBBackend/internal/cofe_storage/nawmenustore"
+	"github.com/cofeGB/coffeGBBackend/internal/cofe_storage/storage"
 )
 
 const (
@@ -33,7 +36,7 @@ type ServerSettings struct {
 	Listen   string `default:"127.0.0.1:8123"`
 	LogLevel string `default:"INFO"`
 	DBFile   string `default:"coffeDb.db"`
-	DSN		 string `default:"host=10.209.81.154 user=postgres password=postgres dbname=coffegb port=5432 sslmode=disable"`
+	DSN      string `default:"host=localhost user=postgres password=postgres dbname=coffegb port=5432 sslmode=disable"`
 }
 
 func setUp() (srv *ServerSettings) {
@@ -58,33 +61,33 @@ func main() {
 
 	// init storages and services
 
-													// storage, err := cofe_storage.NewCofeStorage(srvSetting.DBFile)
-													// if err != nil {
-													// 	log.Fatalf("cannot initialize storage: %s", err.Error())
-													// }
-													// defer storage.Close()
-
-													// cofeService := cofe_services.NewCofeService(storage)
-	
-
-	store , err:=starterstore.StartDB(srvSetting.DSN,gorm.Config{})
+	// Пока предпологаем, что БД одна на всё
+	db, err := gorm.Open(postgres.Open(srvSetting.DSN), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
-     
 
-	nmstore:=nawmenustore.NewNawMenu(store.DB)
+	cofeDb, err := storage.NewCofeStore(db)
+	if err != nil {
+		log.Fatalf("cannot initialize storage: %s", err.Error())
+	}
+    sqlDB, err := cofeDb.DB.DB()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer sqlDB.Close()
 
-	mawMenu:=nawmenu.NewMenu(nmstore)
+	
+	nmstore := nawmenustore.NewNawMenuStore(cofeDb)
 
+	mawMenu := nawmenu.NewNawMenu(nmstore)
 
-
-
+	cofeService := services.NewCofeService(mawMenu)
+	
 
 	// start api server
 	//server := cofe_api.NewCofeAPIServer(srvSetting.Listen, srvSetting.LogLevel, cofeService)
-	server := cofe_api.NewCofeAPIServer(srvSetting.Listen, srvSetting.LogLevel, mawMenu)
-
+	server := cofe_api.NewCofeAPIServer(srvSetting.Listen, srvSetting.LogLevel, *cofeService)
 
 	go func() {
 		// usually server works behind proxy,
