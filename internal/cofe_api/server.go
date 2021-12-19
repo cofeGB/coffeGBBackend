@@ -26,5 +26,8 @@ func NewCofeAPIServer(addr, logLevel string, service services.CofeServices) (srv
 	// endpoints
 	router.Get("/", handler.Hello)
 
+	////http://localhost:3000/api/navMenu/
+	router.Get("/api/navMenu", handler.GetListNawMenu)
+
 	return &http.Server{Addr: addr, Handler: router}
 }

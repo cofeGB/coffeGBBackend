@@ -1,0 +1,10 @@
+type NMenu struct {
+	 Store NawMenuStore
+}
+
+                type NawMenuStor struct {
+                    Store *storage.CofeDB
+                }                   
+                                type CofeDB struct {
+                                        PG *sql.DB
+                                    }

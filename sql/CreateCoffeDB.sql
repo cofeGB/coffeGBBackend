@@ -10,3 +10,5 @@ CREATE DATABASE "cofeGB"
     LC_CTYPE = 'en_US.utf8'
     TABLESPACE = pg_default
     CONNECTION LIMIT = -1;
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

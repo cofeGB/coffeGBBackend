@@ -4,7 +4,7 @@ import "github.com/cofeGB/coffeGBBackend/internal/cofe_services/nawmenu"
 
 
 type CofeServices struct {
-	nawMenu *nawmenu.NMenu
+	NawMenu *nawmenu.NMenu
 	//ToDo Тут остальные модели
 }
 
@@ -12,7 +12,7 @@ type CofeServices struct {
 func NewCofeService(nm *nawmenu.NMenu) *CofeServices {
 	
 	return &CofeServices{
-		nawMenu: nm,
+		NawMenu: nm,
 	}
 }
 

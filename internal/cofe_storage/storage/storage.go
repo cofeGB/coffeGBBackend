@@ -1,24 +1,26 @@
 package storage
 
 import (
-	"log"
+	"database/sql"
+	//"log"
 
-	"gorm.io/gorm"
-	
+	//"gorm.io/gorm"
 )
 
 type CofeDB struct {
-	DB *gorm.DB
+	PG *sql.DB
 }
 
-func NewCofeStore(db *gorm.DB) (*CofeDB, error) {
-	return &CofeDB{DB: db}, nil
+// func NewCofeStore(db *gorm.DB) (*CofeDB, error) {
+// 	return &CofeDB{DB: db}, nil
+// }
+
+func NewCofeStore(db *sql.DB) (*CofeDB, error) {
+	return &CofeDB{PG: db}, nil
 }
+
 
 func (c *CofeDB) Close() {
-	sqlDB, err := c.DB.DB()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	sqlDB.Close()
+	
+	c.PG.Close()
 }
