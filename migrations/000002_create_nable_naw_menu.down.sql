@@ -1,0 +1,1 @@
+drop table naw_menu;

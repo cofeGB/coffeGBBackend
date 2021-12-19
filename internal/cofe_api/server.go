@@ -5,15 +5,17 @@ import (
 	"time"
 
 	// third party
-	"github.com/cofeGB/coffeGBBackend/internal/cofe_services/services"
+	
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	// my own
+
+	"github.com/cofeGB/coffeGBBackend/internal/cofe_services"
 )
 
 var ServerTimeout = 60 * time.Second
 
-func NewCofeAPIServer(addr, logLevel string, service services.CofeServices) (srv *http.Server) {
+func NewCofeAPIServer(addr, logLevel string, service cofe_services.CofeServices) (srv *http.Server) {
 	// handler
 	handler := CofeHandler{service: service}
 	// mux

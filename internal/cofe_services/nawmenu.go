@@ -1,4 +1,4 @@
-package nawmenu
+package cofe_services
 
 import (
 	"github.com/google/uuid"
