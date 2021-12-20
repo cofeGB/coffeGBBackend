@@ -50,6 +50,7 @@ components:
           example: /menu/startes
         itemOrder:
           type: integer
+          format: int32
           example: 0
         
     category:
