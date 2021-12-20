@@ -14,10 +14,13 @@ type CofeDB struct {
 	PG *sql.DB
 }
 
+type Settings struct {
+	DSN           string
+	MigrationsDir string
+}
 
-
-func NewCofeStore(dsn string) (*CofeDB, error) {
-	db, err := sql.Open("postgres", dsn)
+func NewCofeStore(settings *Settings) (*CofeDB, error) {
+	db, err := sql.Open("postgres", settings.DSN)
 	if err != nil {
 		return nil, err
 	}
@@ -28,14 +31,14 @@ func NewCofeStore(dsn string) (*CofeDB, error) {
 	}
 
 	driver, _ := postgres.WithInstance(db, &postgres.Config{})
-    m, err := migrate.NewWithDatabaseInstance(
-        "file:migrations",
-        "postgres", driver)
-    m.Up()
+	m, err := migrate.NewWithDatabaseInstance(
+		"file:"+settings.MigrationsDir,
+		"postgres", driver)
+	m.Up()
 	if err != nil {
 		log.Fatalf("cannot run migration: %s", err.Error())
 	}
-		
+
 	return &CofeDB{PG: db}, nil
 }
 

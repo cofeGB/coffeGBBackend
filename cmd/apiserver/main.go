@@ -25,8 +25,9 @@ const (
 )
 
 type DBSettings struct {
-	URL          string        `default:"host=localhost port=5432 user=postgres password=postgres dbname=cofeGB sslmode=disable"`
-	QueryTimeout time.Duration `default:"30s"`
+	URL           string        `default:"host=localhost port=5432 user=postgres password=postgres dbname=cofeGB sslmode=disable"`
+	QueryTimeout  time.Duration `default:"30s"`
+	MigrationsDir string        `default:"migrations"`
 }
 
 type ServerSettings struct {
@@ -64,26 +65,21 @@ func main() {
 	// setup app
 	srvSetting, dbSettings := setUp()
 
-	fmt.Println(srvSetting)
-	fmt.Println(srvSetting.ConnStr)
-	cofeStore, err := cofe_storage.NewCofeStore(srvSetting.ConnStr)
-
-	storage, err := cofe_storage.NewCofeStorage(cofe_storage.Config{
-		DSN:     dbSettings.URL,
-		Timeout: dbSettings.QueryTimeout,
+	// init services
+	menuStore, err := cofe_storage.NewNawMenuStore(&cofe_storage.Settings{
+		DSN:           dbSettings.URL,
+		MigrationsDir: dbSettings.MigrationsDir,
 	})
 	if err != nil {
 		log.Fatalf("cannot initialize storage: %s", err.Error())
 	}
+	defer menuStore.PG.Close()
 
-	mawMenuStore := cofe_storage.NewNawMenuStore(cofeStore.PG)
-	mawMenu := cofe_services.NewNawMenu(mawMenuStore)
-
-	cofeService := cofe_services.NewCofeService(mawMenu)
+	cofeServices := cofe_services.NewCofeService(menuStore)
 
 	// start api server
 
-	server := cofe_api.NewCofeAPIServer(srvSetting.Listen, srvSetting.LogLevel, *cofeService)
+	server := cofe_api.NewCofeAPIServer(srvSetting.Listen, srvSetting.LogLevel, *cofeServices)
 
 	go func() {
 		// usually server works behind proxy,

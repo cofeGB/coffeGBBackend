@@ -29,11 +29,15 @@ type NawMenus struct {
 	PG *sql.DB
 }
 
-func NewNawMenuStore(db *sql.DB) *NawMenus {
+func NewNawMenuStore(settings *Settings) (*NawMenus, error) {
+	db, err := NewCofeStore(settings)
+	if err != nil {
+		return nil, err
+	}
 
 	return &NawMenus{
-		PG: db,
-	}
+		PG: db.PG,
+	}, nil
 
 }
 
