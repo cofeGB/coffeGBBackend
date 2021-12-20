@@ -19,7 +19,13 @@ type Settings struct {
 	MigrationsDir string
 }
 
+var dbConn *CofeDB = nil
+
 func NewCofeStore(settings *Settings) (*CofeDB, error) {
+	if dbConn != nil {
+		return dbConn, nil
+	}
+
 	db, err := sql.Open("postgres", settings.DSN)
 	if err != nil {
 		return nil, err
