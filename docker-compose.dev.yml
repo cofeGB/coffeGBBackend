@@ -17,7 +17,7 @@ services:
     volumes: 
       - db_data:/var/lib/pgdata
     ports:
-      - 15432:5432
+      - 5432:5432
     restart: on-failure
     logging: *default-logging
 
@@ -33,7 +33,7 @@ services:
     volumes:
       - .:/usr/src/app
     ports:
-      - "8123:8123"
+      - 8123:8123
     command: [ "go", "run", "cmd/apiserver/main.go" ]
     restart: on-failure
     depends_on: 

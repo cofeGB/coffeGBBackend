@@ -3,7 +3,6 @@
 package main
 
 import (
-	//std
 	"context"
 	"flag"
 	"fmt"
@@ -12,10 +11,8 @@ import (
 	"os/signal"
 	"time"
 
-	// third party
 	"github.com/kelseyhightower/envconfig"
 
-	// my own
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_api"
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_services"
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_storage"
@@ -28,14 +25,13 @@ const (
 )
 
 type DBSettings struct {
-	URL          string
+	URL          string        `default:"host=localhost port=5432 user=postgres password=postgres dbname=cofeGB sslmode=disable"`
 	QueryTimeout time.Duration `default:"30s"`
 }
 
 type ServerSettings struct {
-	Listen      string `default:"127.0.0.1:8123"`
-	LogLevel    string `default:"INFO"`
-	LogRequests bool   `default:"false"`
+	Listen   string `default:"127.0.0.1:8123"`
+	LogLevel string `default:"INFO"`
 }
 
 func setUp() (srv *ServerSettings, db *DBSettings) {
@@ -68,7 +64,9 @@ func main() {
 	// setup app
 	srvSetting, dbSettings := setUp()
 
-	// init storages and services
+	fmt.Println(srvSetting)
+	fmt.Println(srvSetting.ConnStr)
+	cofeStore, err := cofe_storage.NewCofeStore(srvSetting.ConnStr)
 
 	storage, err := cofe_storage.NewCofeStorage(cofe_storage.Config{
 		DSN:     dbSettings.URL,
@@ -77,12 +75,15 @@ func main() {
 	if err != nil {
 		log.Fatalf("cannot initialize storage: %s", err.Error())
 	}
-	defer storage.Close()
 
-	cofeService := cofe_services.NewCofeService(storage)
+	mawMenuStore := cofe_storage.NewNawMenuStore(cofeStore.PG)
+	mawMenu := cofe_services.NewNawMenu(mawMenuStore)
+
+	cofeService := cofe_services.NewCofeService(mawMenu)
 
 	// start api server
-	server := cofe_api.NewCofeAPIServer(srvSetting.Listen, srvSetting.LogLevel, cofeService)
+
+	server := cofe_api.NewCofeAPIServer(srvSetting.Listen, srvSetting.LogLevel, *cofeService)
 
 	go func() {
 		// usually server works behind proxy,
