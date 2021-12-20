@@ -45,7 +45,7 @@ jobs:
       # setup
       - run: heroku buildpacks:add -a $HEROKU_APP heroku-community/nginx || echo nginx already exists
       - run: heroku buildpacks:add -a $HEROKU_APP heroku/go || echo go already exists
-      - run: heroku config:set -a $HEROKU_APP NGINX_ALLOWED_HOSTS=https://github.com
+      - run: heroku config:set -a $HEROKU_APP NGINX_ALLOWED_HOSTS=${ALLOWED_HOSTS}
       # deploy
       - run: heroku git:remote -a $HEROKU_APP
       - run: git push heroku $GITHUB_REF_NAME:main --force
