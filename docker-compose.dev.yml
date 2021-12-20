@@ -1,0 +1,44 @@
+version: '3.5'
+
+x-logging:
+  &default-logging
+  driver: "json-file"
+  options:
+    max-size: "2000k"
+    max-file: "10"
+
+services:
+  db:
+    image: postgres:13.4-alpine
+    environment: 
+      - POSTGRES_DB=${PG_DATABASE:?err}
+      - POSTGRES_USER=${PG_USER:?err}
+      - POSTGRES_PASSWORD=${PG_PASS:?err}
+    volumes: 
+      - db_data:/var/lib/pgdata
+    ports:
+      - 15432:5432
+    restart: on-failure
+    logging: *default-logging
+
+  api:
+    image: coffegb-dev:${VERSION:?err}
+    build: 
+      context: .
+      target: builder
+      args: 
+        - VERSION=${VERSION:?err}
+    environment: 
+      DATABASE_URL: "user=${PG_USER:?err} password=${PG_PASS:?err} host=db port=5432 dbname=${PG_DATABASE:?err} sslmode=disable"
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "8123:8123"
+    command: [ "go", "run", "cmd/apiserver/main.go" ]
+    restart: on-failure
+    depends_on: 
+      - db
+    logging: *default-logging
+
+volumes:
+  db_data:

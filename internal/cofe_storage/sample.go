@@ -1,11 +1,18 @@
 package cofe_storage
 
+import "time"
+
 // Just sample to run server
 
 type SampleStorage struct {
 }
 
-func NewCofeStorage(filename string) (storage *SampleStorage, err error) {
+type Config struct {
+	DSN     string
+	Timeout time.Duration
+}
+
+func NewCofeStorage(config Config) (storage *SampleStorage, err error) {
 	return
 }
 

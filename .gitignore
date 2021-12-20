@@ -13,6 +13,9 @@
 # sqllite
 *.db
 
+# docker
+docker-compose.yml
+
 # app specific
 ./coffeGBBackend
 ./apiserver
