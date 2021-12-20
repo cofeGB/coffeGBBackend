@@ -4,15 +4,15 @@ info:
   description: CofeGB app rest api specification
   version: 1.0.0
 tags:
-  - name: menu
+  - name: nawmenu
     description: app navigation menu entries
   - name: category
     description: Dish menu entries
 paths:
-  /navMenu:
+  /api/navMenu:
     get:
       tags:
-        - menu
+        - nawmenu
       description: Return app navigation menu entries
       responses:
         200:
@@ -42,27 +42,16 @@ components:
     navMenuItem:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-          example: 1
         title:
           type: string
           example: Закуски
-        route:
+        patch:
           type: string
-          example: /menu
-        icon:
-          type: string
-          example: starters
-        query:
-          type: string
-          example: starters
-        warn:
-          type: boolean
-          example: false
-        warnMsg:
-          type: string
+          example: /menu/startes
+        itemOrder:
+          type: integer
+          example: 0
+        
     category:
       type: object
       properties:
