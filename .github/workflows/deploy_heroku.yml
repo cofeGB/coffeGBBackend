@@ -31,7 +31,9 @@ jobs:
       # tooling
       - run: curl $HEROKU_CLI_URL | sh
       # login
-      - run: |
+      - env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
               cat <<EOF >~/.netrc
               machine git.heroku.com
                 login gitlab
