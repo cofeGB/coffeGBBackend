@@ -3,7 +3,6 @@
 package main
 
 import (
-	//std
 	"context"
 	"flag"
 	"fmt"
@@ -12,10 +11,8 @@ import (
 	"os/signal"
 	"time"
 
-	// third party
 	"github.com/kelseyhightower/envconfig"
 
-	// my own
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_api"
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_services"
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_storage"
@@ -28,14 +25,14 @@ const (
 )
 
 type DBSettings struct {
-	URL          string
-	QueryTimeout time.Duration `default:"30s"`
+	URL           string        `default:"host=localhost port=5432 user=postgres password=postgres dbname=cofeGB sslmode=disable"`
+	QueryTimeout  time.Duration `default:"30s"`
+	MigrationsDir string        `default:"migrations"`
 }
 
 type ServerSettings struct {
-	Listen      string `default:"127.0.0.1:8123"`
-	LogLevel    string `default:"INFO"`
-	LogRequests bool   `default:"false"`
+	Listen   string `default:"127.0.0.1:8123"`
+	LogLevel string `default:"INFO"`
 }
 
 func setUp() (srv *ServerSettings, db *DBSettings) {
@@ -68,21 +65,21 @@ func main() {
 	// setup app
 	srvSetting, dbSettings := setUp()
 
-	// init storages and services
-
-	storage, err := cofe_storage.NewCofeStorage(cofe_storage.Config{
-		DSN:     dbSettings.URL,
-		Timeout: dbSettings.QueryTimeout,
+	// init services
+	menuStore, err := cofe_storage.NewNawMenuStore(&cofe_storage.Settings{
+		DSN:           dbSettings.URL,
+		MigrationsDir: dbSettings.MigrationsDir,
 	})
 	if err != nil {
 		log.Fatalf("cannot initialize storage: %s", err.Error())
 	}
-	defer storage.Close()
+	defer menuStore.PG.Close()
 
-	cofeService := cofe_services.NewCofeService(storage)
+	cofeServices := cofe_services.NewCofeService(menuStore)
 
 	// start api server
-	server := cofe_api.NewCofeAPIServer(srvSetting.Listen, srvSetting.LogLevel, cofeService)
+
+	server := cofe_api.NewCofeAPIServer(srvSetting.Listen, srvSetting.LogLevel, *cofeServices)
 
 	go func() {
 		// usually server works behind proxy,
