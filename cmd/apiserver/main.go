@@ -3,18 +3,16 @@
 package main
 
 import (
-	//std
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"time"
 
-	// third party
 	"github.com/kelseyhightower/envconfig"
 
-	// my own
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_api"
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_services"
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_storage"
@@ -22,25 +20,41 @@ import (
 
 const (
 	envPrefix             = "COFFEGB"
+	envDbPrefix           = "DATABASE"
 	herokuNginxSignalFile = "/tmp/app-initialized"
 )
+
+type DBSettings struct {
+	URL           string        `default:"host=localhost port=5432 user=postgres password=postgres dbname=cofeGB sslmode=disable"`
+	QueryTimeout  time.Duration `default:"30s"`
+	MigrationsDir string        `default:"migrations"`
+}
 
 type ServerSettings struct {
 	Listen   string `default:"127.0.0.1:8123"`
 	LogLevel string `default:"INFO"`
-	DBFile   string `default:"coffeDb.db"`
 }
 
-func setUp() (srv *ServerSettings) {
+func setUp() (srv *ServerSettings, db *DBSettings) {
+	srv = &ServerSettings{}
+	db = &DBSettings{}
+	flag.Usage = func() {
+		fmt.Print("-- App server config --\n\n")
+		_ = envconfig.Usage(envPrefix, srv)
+		fmt.Print("\n-- Database config --\n\n")
+		_ = envconfig.Usage(envDbPrefix, db)
+	}
 	flag.Parse()
 
-	srv = &ServerSettings{}
 	// always try to read env, maybe use defaults
 	if err := envconfig.Process(envPrefix, srv); err != nil {
 		log.Fatalln(err)
 	}
+	if err := envconfig.Process(envDbPrefix, db); err != nil {
+		log.Fatalln(err)
+	}
 
-	return srv
+	return srv, db
 }
 
 func main() {
@@ -49,20 +63,23 @@ func main() {
 	signal.Notify(quit, os.Interrupt)
 
 	// setup app
-	srvSetting := setUp()
+	srvSetting, dbSettings := setUp()
 
-	// init storages and services
-
-	storage, err := cofe_storage.NewCofeStorage(srvSetting.DBFile)
+	// init services
+	menuStore, err := cofe_storage.NewNawMenuStore(&cofe_storage.Settings{
+		DSN:           dbSettings.URL,
+		MigrationsDir: dbSettings.MigrationsDir,
+	})
 	if err != nil {
 		log.Fatalf("cannot initialize storage: %s", err.Error())
 	}
-	defer storage.Close()
+	defer menuStore.PG.Close()
 
-	cofeService := cofe_services.NewCofeService(storage)
+	cofeServices := cofe_services.NewCofeService(menuStore)
 
 	// start api server
-	server := cofe_api.NewCofeAPIServer(srvSetting.Listen, srvSetting.LogLevel, cofeService)
+
+	server := cofe_api.NewCofeAPIServer(srvSetting.Listen, srvSetting.LogLevel, *cofeServices)
 
 	go func() {
 		// usually server works behind proxy,
