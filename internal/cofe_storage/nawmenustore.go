@@ -29,16 +29,10 @@ type NawMenus struct {
 	PG *sql.DB
 }
 
-func NewNawMenuStore(settings *Settings) (*NawMenus, error) {
-	db, err := NewCofeStore(settings)
-	if err != nil {
-		return nil, err
-	}
-
+func NewNawMenuStore(db *CofeDB) *NawMenus {
 	return &NawMenus{
 		PG: db.PG,
-	}, nil
-
+	}
 }
 
 func (cs *NawMenus) GetListNawMenu(ctx context.Context) ([]cofe_services.NawMenu, error) {

@@ -65,20 +65,23 @@ func main() {
 	// setup app
 	srvSetting, dbSettings := setUp()
 
-	// init services
-	menuStore, err := cofe_storage.NewNawMenuStore(&cofe_storage.Settings{
+	// init store db
+	db, err := cofe_storage.NewCofeStore(&cofe_storage.Settings{
 		DSN:           dbSettings.URL,
 		MigrationsDir: dbSettings.MigrationsDir,
 	})
 	if err != nil {
 		log.Fatalf("cannot initialize storage: %s", err.Error())
 	}
-	defer menuStore.PG.Close()
+	defer db.PG.Close()
 
-	cofeServices := cofe_services.NewCofeService(menuStore)
+	// init services
+	cofeServices := cofe_services.NewCofeService(
+		cofe_storage.NewNawMenuStore(db),
+		cofe_storage.NewCategoryStore(db),
+	)
 
 	// start api server
-
 	server := cofe_api.NewCofeAPIServer(srvSetting.Listen, srvSetting.LogLevel, *cofeServices)
 
 	go func() {
