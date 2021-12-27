@@ -17,7 +17,7 @@ services:
     volumes: 
       - db_data:/var/lib/pgdata
     ports:
-      - 15432:5432
+      - 5432:5432
     restart: on-failure
     logging: *default-logging
 
@@ -30,10 +30,11 @@ services:
         - VERSION=${VERSION:?err}
     environment: 
       DATABASE_URL: "user=${PG_USER:?err} password=${PG_PASS:?err} host=db port=5432 dbname=${PG_DATABASE:?err} sslmode=disable"
+      DATABASE_MIGRATIONSDIR: "/usr/src/app/migrations"
     volumes:
       - .:/usr/src/app
     ports:
-      - "8123:8123"
+      - 8123:8123
     command: [ "go", "run", "cmd/apiserver/main.go" ]
     restart: on-failure
     depends_on: 

@@ -5,19 +5,19 @@ import (
 	"time"
 
 	// third party
+	
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-
 	// my own
+
 	"github.com/cofeGB/coffeGBBackend/internal/cofe_services"
 )
 
 var ServerTimeout = 60 * time.Second
 
-func NewCofeAPIServer(addr, logLevel string, service *cofe_services.CofeService) (srv *http.Server) {
+func NewCofeAPIServer(addr, logLevel string, service cofe_services.CofeServices) (srv *http.Server) {
 	// handler
 	handler := CofeHandler{service: service}
-
 	// mux
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
@@ -27,6 +27,9 @@ func NewCofeAPIServer(addr, logLevel string, service *cofe_services.CofeService)
 
 	// endpoints
 	router.Get("/api", handler.Hello)
+
+	////http://localhost:3000/api/navMenu/
+	router.Get("/api/navMenu", handler.GetListNawMenu)
 
 	return &http.Server{Addr: addr, Handler: router}
 }
