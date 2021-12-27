@@ -9,6 +9,6 @@ type CofeServices struct {
 func NewCofeService(menuStore NawMenuStore, categoryStore CategoryStore) *CofeServices {
 	return &CofeServices{
 		NawMenu:  NewNawMenu(menuStore),
-		Category: NewCategories(categoryStore),
+		Category: NewCategoryRepo(categoryStore),
 	}
 }

@@ -24,7 +24,7 @@ type CategoryRepo struct {
 	store CategoryStore
 }
 
-func NewCategories(store CategoryStore) *CategoryRepo {
+func NewCategoryRepo(store CategoryStore) *CategoryRepo {
 	return &CategoryRepo{
 		store: store,
 	}
