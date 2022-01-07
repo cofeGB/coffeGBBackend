@@ -1,0 +1,182 @@
+[
+    {
+      "category": "starters", 
+      "dishGuid": "9ec7ab8d-e25e-491f-9dbd-55ffb21bfcfb",
+      "creatorGuGuid": "a7f4485d-ecb7-4d1d-817d-3f5036fae88a",
+      "title": "Закуска «Уральский рулет»",
+      "description": "Интересный мясной рулет с добавлением сырокопченого окорока и яичного омлета с болгарским перцем и кунжутом.",
+      "weight": 220,
+      "volume": null,
+      "price": 84,
+      "quantity": 1,
+      "nutrients": {
+                        "proteins": {
+                                        "percentage": 15.8,
+                                        "value": null
+                        },
+                        "fats": {
+                                        "percentage": 18.8,
+                                        "value": null
+                        },
+                        "carbohydrates": {
+                                            "percentage": 0.5,
+                                            "value": null
+                        },
+                        "energy": 515.2
+      },
+      "imgUrls": ["rulet.jpg"],
+      "ingredients": [],
+      "availability": 0,
+      "warnings": ""
+    },
+    {
+      "category": "sandwich",
+      "dishGuid": "9ec7ab8d-e25e-491f-9dbd-55ffb21bfcfb",
+      "creatorGuGuid": "a7f4485d-ecb7-4d1d-817d-3f5036fae88a",
+      "title": "Сэндвич с курицей и беконом",
+      "description": "Сэндвич с курицей, беконом, зеленым салатом, помидором, огурцом, красным луком, горчицей и сыром.",
+      "weight": 250,
+      "volume": null,
+      "price": 78,
+      "quantity": 1,
+      "nutrients": {
+        "proteins": {
+          "percentage": null,
+          "value": 36
+        },
+        "fats": {
+          "percentage": null,
+          "value": 23
+        },
+        "carbohydrates": {
+          "percentage": null,
+          "value": 44
+        },
+        "energy": 537
+      },
+      "imgUrls": ["sandwich.jpg"],
+      "ingredients": [],
+      "availability": 1,
+      "warnings": ""
+    },
+    {
+      "category": "salad",
+      "dishGuid": "9ec7ab8d-e25e-491f-9dbd-55ffb21bfcfb",
+      "creatorGuGuid": "a7f4485d-ecb7-4d1d-817d-3f5036fae88a",
+      "title": "Греческий салат",
+      "description": "Салат из помидоров, сладкого перца, огурцов, феты, шалота и маслин, заправленный оливковым маслом с солью, чёрным перцем, орегано.",
+      "weight": 250,
+      "volume": null,
+      "price": 95,
+      "quantity": 1,
+      "nutrients": {
+        "proteins": {
+          "percentage": null,
+          "value": 9.5
+        },
+        "fats": {
+          "percentage": null,
+          "value": 43.7
+        },
+        "carbohydrates": {
+          "percentage": null,
+          "value": 12.4
+        },
+        "energy": 482.7
+      },
+      "imgUrls": ["salad.jpg"],
+      "ingredients": [],
+      "availability": 2,
+      "warnings": ""
+    },
+    {
+      "category": "dessert",
+      "dishGuid": "9ec7ab8d-e25e-491f-9dbd-55ffb21bfcfb",
+      "creatorGuGuid": "a7f4485d-ecb7-4d1d-817d-3f5036fae88a",
+      "title": "Торт Прага",
+      "description": "Состоит из трёх бисквитных коржей с двумя слоями крема «Пражский». Верхняя и боковые поверхности покрыты повидлом и заглазированы помадкой (либо боковые поверхности отделаны кремом и бисквитной крошкой). Сверху украшен рисунком из крема",
+      "weight": 200,
+      "volume": null,
+      "price": 83,
+      "quantity": 1,
+      "nutrients": {
+        "proteins": {
+          "percentage": null,
+          "value": 12.7
+        },
+        "fats": {
+          "percentage": null,
+          "value": 33.8
+        },
+        "carbohydrates": {
+          "percentage": null,
+          "value": 85.1
+        },
+        "energy": 720.7
+      },
+      "imgUrls": ["dessert.jpg"],
+      "ingredients": [],
+      "availability": 1,
+      "warnings": ""
+    },
+    {
+      "category": "coffee",
+      "dishGuid": "9ec7ab8d-e25e-491f-9dbd-55ffb21bfcfb",
+      "creatorGuGuid": "a7f4485d-ecb7-4d1d-817d-3f5036fae88a",
+      "title": "Капучино",
+      "description": "Напиток на основе эспрессо со вспененным молоком. Вкус капучино идеально сбалансирован. Благодаря свежесваренному эспрессо он насыщенно кофейный, с ярко выраженным ароматом, а из-за молока - мягкий, с натуральной сладостью.",
+      "weight": null,
+      "volume": 150,
+      "price": 101,
+      "quantity": 1,
+      "nutrients": {
+        "proteins": {
+          "percentage": null,
+          "value": 3
+        },
+        "fats": {
+          "percentage": null,
+          "value": 3
+        },
+        "carbohydrates": {
+          "percentage": null,
+          "value": 5
+        },
+        "energy": 59
+      },
+      "imgUrls": ["coffee.jpeg"],
+      "ingredients": [],
+      "availability": 1,
+      "warnings": ""
+    },
+    {
+      "category": "tea",
+      "dishGuid": "9ec7ab8d-e25e-491f-9dbd-55ffb21bfcfb",
+      "creatorGuGuid": "a7f4485d-ecb7-4d1d-817d-3f5036fae88a",
+      "title": "Зеленый чай с имбирем лимоном и медом",
+      "description": "Ароматный, согревающий и полезный напиток в сезон холодов!",
+      "weight": null,
+      "volume": 150,
+      "price": 95,
+      "quantity": 1,
+      "nutrients": {
+        "proteins": {
+          "percentage": null,
+          "value": 0
+        },
+        "fats": {
+          "percentage": null,
+          "value": 0
+        },
+        "carbohydrates": {
+          "percentage": null,
+          "value": 18
+        },
+        "energy": 89
+      },
+      "imgUrls": ["tea.jpg"],
+      "ingredients": [],
+      "availability": 2,
+      "warnings": ""
+    }
+  ]

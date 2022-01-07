@@ -13,6 +13,7 @@ services:
     environment: 
       - POSTGRES_DB=${PG_DATABASE:?err}
       - POSTGRES_USER=${PG_USER:?err}
+      
       - POSTGRES_PASSWORD=${PG_PASS:?err}
     volumes: 
       - db_data:/var/lib/pgdata

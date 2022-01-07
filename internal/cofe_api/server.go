@@ -35,5 +35,7 @@ func NewCofeAPIServer(addr, logLevel string, service cofe_services.CofeServices)
 	// http://localhost:3000/api/categories/
 	router.Get("/api/categories", handler.GetCategories)
 
+	router.Get("/api/dish", handler.GetListDish)
+
 	return &http.Server{Addr: addr, Handler: router}
 }
