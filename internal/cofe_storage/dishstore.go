@@ -24,8 +24,8 @@ type DishNutrientDb struct {
 }
 
 type DishIngredientDB struct {
-	ID          uuid.UUID // guGuid - идентификатор ингредиента (Global Unchanged Guidentifier)
-	Category    string
+	ID       uuid.UUID // guGuid - идентификатор ингредиента (Global Unchanged Guidentifier)
+	Category string
 	//DishId      uuid.UUID
 	Title       string
 	Description string
@@ -73,6 +73,168 @@ func NewDishStore(dbConn *CofeDB) *Dishs {
 
 }
 
+//Блюдо по ID
+func (dish *Dishs) GetDIshByID(ctx context.Context, id uuid.UUID) (*cofe_services.Dish, error) {
+	dishDb, err := dish.GetDishByIdDb(ctx, id)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+    dishCategory, err := dish.GetDishCategory(ctx, dishDb.CategoryId)
+		if err != nil {
+			log.Println(err)
+
+		}
+		dishNutrient, err := dish.GetDishNutrient(ctx, dishDb.ID)
+		if err != nil {
+			log.Println(err)
+
+		}
+
+		dishImage, err := dish.GetDishImageUrls(ctx, dishDb.ID)
+		if err != nil {
+			log.Println(err)
+
+		}
+
+		dishIngradient, err := dish.GetDishIngredient(ctx, dishDb.ID)
+		if err != nil {
+			log.Println(err)
+
+		}
+
+		cofeDish:= &cofe_services.Dish{
+			Category:      dishCategory,
+			DishGuid:      dishDb.ID,
+			CreatorGuGuid: dishDb.CreatorGuGuid,
+			Title:         dishDb.Title,
+			Description:   dishDb.Description,
+			Weight:        dishDb.Weight,
+			Volume:        dishDb.Volume,
+			Price:         dishDb.Price,
+			Quantity:      dishDb.Quantity,
+			Nutrients:     dishNutrient,
+			ImgUrls:       dishImage,
+			Ingredients:   dishIngradient,
+			Availability:  dishDb.Availability,
+			Warnings:      dishDb.Warnings,
+		}
+		return cofeDish, nil
+
+
+}
+
+func (dish *Dishs) GetDishByIdDb(ctx context.Context, id uuid.UUID) (*DishDb, error) {
+	row := dish.PG.QueryRowContext(ctx, `SELECT id, created_at, updated_at, category, creator_gu_guid, title, description, weight, volume,
+	price, quantity, availability, warnings, is_run
+	FROM dish where is_run = true and id = $1`, id)
+	dishDb := &DishDb{}
+	err := row.Scan(&dishDb.ID, &dishDb.CreatedAt, &dishDb.UpdatedAt, &dishDb.CategoryId, &dishDb.CreatorGuGuid, 
+		&dishDb.Title, &dishDb.Description, &dishDb.Weight, &dishDb.Volume,
+		&dishDb.Price, &dishDb.Quantity, &dishDb.Availability, &dishDb.Warnings, &dishDb.IsRun)
+	if err != nil {
+		log.Println(err)
+		return dishDb, err
+	}
+
+	return dishDb, nil
+
+}
+
+//СПисок блюд по категориям
+func (dish *Dishs) GetDishByCategory(ctx context.Context, cat string) ([]cofe_services.Dish, error) {
+
+	//ПОлучем ID категории по строковому значению
+	category, err := dish.GetIDDishCategory(ctx, cat)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	if category == uuid.Nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	listDishDb, err := dish.GrtDishByCategoryDb(ctx, category)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	cofeDish := cofe_services.Dish{}
+	listCofeDish := []cofe_services.Dish{}
+	for _, d := range listDishDb {
+
+		dishNutrient, err := dish.GetDishNutrient(ctx, d.ID)
+		if err != nil {
+			log.Println(err)
+
+		}
+
+		dishImage, err := dish.GetDishImageUrls(ctx, d.ID)
+		if err != nil {
+			log.Println(err)
+
+		}
+
+		dishIngradient, err := dish.GetDishIngredient(ctx, d.ID)
+		if err != nil {
+			log.Println(err)
+
+		}
+
+		cofeDish = cofe_services.Dish{
+			Category:      cat,
+			DishGuid:      d.ID,
+			CreatorGuGuid: d.CreatorGuGuid,
+			Title:         d.Title,
+			Description:   d.Description,
+			Weight:        d.Weight,
+			Volume:        d.Volume,
+			Price:         d.Price,
+			Quantity:      d.Quantity,
+			Nutrients:     dishNutrient,
+			ImgUrls:       dishImage,
+			Ingredients:   dishIngradient,
+			Availability:  d.Availability,
+			Warnings:      d.Warnings,
+		}
+
+		listCofeDish = append(listCofeDish, cofeDish)
+	}
+
+	return listCofeDish, nil
+
+}
+func (dish *Dishs) GrtDishByCategoryDb(ctx context.Context, cat uuid.UUID) ([]DishDb, error) {
+	rows, err := dish.PG.QueryContext(ctx,
+		`SELECT id, created_at, updated_at, category, creator_gu_guid, title, description, weight, volume,
+				price, quantity, availability, warnings, is_run
+	            FROM dish where is_run = true and category = $1`, cat)
+	if err != nil {
+		log.Println(err)
+		return []DishDb{}, err
+	}
+	defer rows.Close()
+	d := DishDb{}
+	dd := []DishDb{}
+
+	for rows.Next() {
+		err := rows.Scan(&d.ID, &d.CreatedAt, &d.UpdatedAt, &d.CategoryId, &d.CreatorGuGuid, &d.Title,
+			&d.Description, &d.Weight, &d.Volume, &d.Price, &d.Quantity, &d.Availability, &d.Warnings, &d.IsRun)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		dd = append(dd, d)
+
+	}
+
+	return dd, nil
+
+}
+
 func (dish *Dishs) GetListDish(ctx context.Context) ([]cofe_services.Dish, error) {
 
 	listDishDb, err := dish.GetListDishDb(ctx)
@@ -80,8 +242,6 @@ func (dish *Dishs) GetListDish(ctx context.Context) ([]cofe_services.Dish, error
 		log.Println(err)
 		return nil, err
 	}
-
-
 
 	cofeDish := cofe_services.Dish{}
 	listCofeDish := []cofe_services.Dish{}
@@ -148,8 +308,6 @@ func (dish *Dishs) GetListDishDb(ctx context.Context) ([]DishDb, error) {
 	d := DishDb{}
 	dd := []DishDb{}
 
-
-
 	for rows.Next() {
 		err := rows.Scan(&d.ID, &d.CreatedAt, &d.UpdatedAt, &d.CategoryId, &d.CreatorGuGuid, &d.Title,
 			&d.Description, &d.Weight, &d.Volume, &d.Price, &d.Quantity, &d.Availability, &d.Warnings, &d.IsRun)
@@ -157,22 +315,6 @@ func (dish *Dishs) GetListDishDb(ctx context.Context) ([]DishDb, error) {
 			log.Println(err)
 			continue
 		}
-		// d = DishDb{
-		// 	ID:            d.ID,
-		// 	CreatedAt:     d.CreatedAt,
-		// 	UpdatedAt:     d.UpdatedAt,
-		// 	CategoryId:      d.CategoryId,
-		// 	CreatorGuGuid: d.CreatorGuGuid,
-		// 	Title:         d.Title,
-		// 	Description:   d.Description,
-		// 	Weight:        d.Weight,
-		// 	Volume:        d.Volume,
-		// 	Price:         d.Price,
-		// 	Quantity:      d.Quantity,
-		// 	Availability:  d.Availability,
-		// 	Warnings:      d.Warnings,
-		// 	IsRun:         d.IsRun,
-		// }
 
 		dd = append(dd, d)
 
@@ -190,6 +332,21 @@ func (dish *Dishs) GetDishCategory(ctx context.Context, id uuid.UUID) (string, e
 		log.Println(err)
 		return "", err
 	}
+
+	return category, nil
+}
+
+//Получить ID категории по строковому значению
+func (dish *Dishs) GetIDDishCategory(ctx context.Context, cat string) (uuid.UUID, error) {
+	row := dish.PG.QueryRowContext(ctx, "select id from categories where query = $1", cat)
+
+	var category uuid.UUID
+	err := row.Scan(&category)
+	if err != nil {
+		log.Println(err)
+		return uuid.Nil, err
+	}
+
 	return category, nil
 }
 
@@ -204,7 +361,6 @@ func (dish *Dishs) GetDishNutrient(ctx context.Context, idProd uuid.UUID) (cofe_
 		Carbohydrates: carbohydrates,
 		Energy:        0,
 	}
-	
 
 	rows, err := dish.PG.QueryContext(ctx, `select nutrient, percentage, "value", energy from foodnutrients where prod_id = $1 order by code`, idProd)
 	if err != nil {

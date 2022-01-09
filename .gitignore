@@ -17,6 +17,10 @@
 docker-compose.yml
 docker-compose.shda.yml
 
+# REST and HTTP
+*.rest
+*.http
+
 # app specific
 ./coffeGBBackend
 ./apiserver

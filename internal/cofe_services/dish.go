@@ -3,7 +3,7 @@ package cofe_services
 import (
 	"context"
 	//"database/sql"
-//	"log"
+	//	"log"
 
 	"github.com/google/uuid"
 )
@@ -22,20 +22,17 @@ import (
  * @property {number} energy - энергетическая ценность одной порции в килокалориях
  */
 
-
 type Nutrient struct {
-	Percentage float64	`json:"percentage"`
-	Value      int32	`json:"value"`
+	Percentage float64 `json:"percentage"`
+	Value      int32   `json:"value"`
 }
-
 
 type FoodNutrients struct {
-	Proteins      Nutrient	`json:"proteins"`
-	Fats          Nutrient	`json:"fats"`
-	Carbohydrates Nutrient	`json:"carbohydrates"`
-	Energy float64			`json:"energy"`
+	Proteins      Nutrient `json:"proteins"`
+	Fats          Nutrient `json:"fats"`
+	Carbohydrates Nutrient `json:"carbohydrates"`
+	Energy        float64  `json:"energy"`
 }
-
 
 /**
  * @typedef {(0|1|2)} Availability - статус наличия: нет, мало, достаточно
@@ -67,26 +64,22 @@ type FoodNutrients struct {
  * @property {string} warnings - предупреждения о свойствах продукта (для аллергиков, диабетиков?)
  */
 
-
- 
-
 type Ingredient struct {
-	Category string			`json:"Category"`
-	ID uuid.UUID			`json:"guGuid"`             
-	Title string			`json:"title"` 
-	Description string		`json:"description"` 
-	Weight float64			`json:"weight"`
-	Volume float64			`json:"volume"`
-	Price float64			`json:"price"`
-    Quantity float64		`json:"quantity"`
-    Nutrients FoodNutrients	`json:"nutrients"`
-	ImgUrls []string		`json:"imgUrls"`  
-	Brand string			`json:"brand"`
-	Origin string			`json:"origin"`
-	Availability string		`json:"availability"`
-	Warnings string			`json:"warnings"`
+	Category     string        `json:"Category"`
+	ID           uuid.UUID     `json:"guGuid"`
+	Title        string        `json:"title"`
+	Description  string        `json:"description"`
+	Weight       float64       `json:"weight"`
+	Volume       float64       `json:"volume"`
+	Price        float64       `json:"price"`
+	Quantity     float64       `json:"quantity"`
+	Nutrients    FoodNutrients `json:"nutrients"`
+	ImgUrls      []string      `json:"imgUrls"`
+	Brand        string        `json:"brand"`
+	Origin       string        `json:"origin"`
+	Availability string        `json:"availability"`
+	Warnings     string        `json:"warnings"`
 }
-
 
 /**
  * @typedef {string} DishCategory - категрия блюда: 'закуски'|'сэндвичи'|'салаты'|'напитки'...
@@ -113,30 +106,27 @@ type Ingredient struct {
  * @property {string} warnings - предупреждения о свойствах продукта (для аллергиков, диабетиков?)
  */
 
-
-
-
-
-
 type Dish struct {
-	Category      string		`json:"category"`
-	DishGuid      uuid.UUID		`json:"dishGuid"`
-	CreatorGuGuid uuid.UUID		`json:"creatorGuGuid"`
-	Title         string		`json:"title"`
-	Description   string		`json:"description"`
-	Weight        float64		`json:"weight"`
-	Volume        float64		`json:"volume"`
-	Price         float64		`json:"price"`
-	Quantity      int32			`json:"quantity"`
-	Nutrients     FoodNutrients	`json:"nutrients"`
-	ImgUrls       []string		`json:"imgUrls"`
-	Ingredients   []Ingredient	`json:"ingredients"`
-	Availability  int32			`json:"availability"`
-	Warnings      string		`json:"warnings"`
+	Category      string        `json:"category"`
+	DishGuid      uuid.UUID     `json:"dishGuid"`
+	CreatorGuGuid uuid.UUID     `json:"creatorGuGuid"`
+	Title         string        `json:"title"`
+	Description   string        `json:"description"`
+	Weight        float64       `json:"weight"`
+	Volume        float64       `json:"volume"`
+	Price         float64       `json:"price"`
+	Quantity      int32         `json:"quantity"`
+	Nutrients     FoodNutrients `json:"nutrients"`
+	ImgUrls       []string      `json:"imgUrls"`
+	Ingredients   []Ingredient  `json:"ingredients"`
+	Availability  int32         `json:"availability"`
+	Warnings      string        `json:"warnings"`
 }
 
 type DishStore interface {
 	GetListDish(ctx context.Context) ([]Dish, error)
+	GetDishByCategory(ctx context.Context, cat string) ([]Dish, error)
+	GetDIshByID(ctx context.Context, id uuid.UUID ) (*Dish, error)
 }
 
 type Dishs struct {
@@ -154,7 +144,21 @@ func (d *Dishs) GetListDIsh(ctx context.Context) ([]Dish, error) {
 	if err != nil {
 		return nil, err
 	}
+	return dish, nil
+}
 
+func (d *Dishs) GetDishByCategory(ctx context.Context, cat string) ([]Dish, error) {
+	dish, err := d.Store.GetDishByCategory(ctx,cat)
+	if err != nil {
+		return nil, err
+	}
+	return dish, nil
+}
 
+func (d *Dishs) GetDIshByID(ctx context.Context, id uuid.UUID) (*Dish, error) {
+	dish, err := d.Store.GetDIshByID(ctx,id)
+	if err != nil {
+		return nil, err
+	}
 	return dish, nil
 }
