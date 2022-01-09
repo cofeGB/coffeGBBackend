@@ -42,6 +42,7 @@ func NewCofeStore(settings *Settings) (*CofeDB, error) {
 		"postgres", driver)
 	m.Up()
 	if err != nil {
+		log.Println(err)
 		log.Fatalf("cannot run migration: %s", err.Error())
 	}
 

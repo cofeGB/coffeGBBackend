@@ -53,6 +53,10 @@ func (cs *NawMenus) GetListNawMenu(ctx context.Context) ([]cofe_services.NawMenu
 			fmt.Println(err)
 			continue
 		}
+
+		log.Println(p)
+
+		
 		m = cofe_services.NawMenu{
 			ID:        p.ID,
 			Title:     p.Title,

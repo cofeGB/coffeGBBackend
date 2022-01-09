@@ -79,6 +79,7 @@ func main() {
 	cofeServices := cofe_services.NewCofeService(
 		cofe_storage.NewNawMenuStore(db),
 		cofe_storage.NewCategoryStore(db),
+		cofe_storage.NewDishStore(db),
 	)
 
 	// start api server
